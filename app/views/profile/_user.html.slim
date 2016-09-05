@@ -1,0 +1,27 @@
+.panel.panel-default
+  .panel-body.text-center
+    .back-image style ="background-image: url(#{image_url 'back.jpg'});"
+      img.img-circle.img-thumbnail.profile-image src == user.image_path
+    h4: strong = user.display_name
+    p
+      span.glyphicon.glyphicon-heart
+      = ' ' + user.hearts.to_s
+    h5.text-info = '@' + user.username
+    p = user.description
+    br
+    ul.list-inline
+      li.text-info
+        p Followers
+        h5: strong = user.followers
+      li
+
+      li.text-info
+        p Following
+        h5: strong = user.following
+
+
+.panel.panel-default
+  .panel-body
+    strong Broadcasts
+
+    p In progress..

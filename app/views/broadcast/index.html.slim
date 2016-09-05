@@ -1,0 +1,253 @@
+.col-lg-2.col-lg-offset-1
+  = render partial: 'profile/user', locals: {user: @user}
+
+.col-lg-6
+  .video-rounded
+    video#video.video-js.vjs-default-skin controls=""
+      source src="#{@url}" type="application/x-mpegURL"
+
+  .panel.panel-default
+    .panel-heading.clearfix
+      .pull-left
+        h4 = @response['broadcast']['status']
+      .pull-right
+        .btn.disabled.btn-sm.btn-default
+          span.glyphicon.glyphicon-user#user-count aria-hidden='true' = ' Connecting...'
+        .btn.btn-sm.btn-info#rotate
+          span.glyphicon.glyphicon-repeat
+    .panel-body
+      .actionBox
+        ul.commentList#comments
+
+        form.form-inline role="form"
+          .form-group
+            input.form-control placeholder=('Your comments') type="text"
+          .form-group
+            button.btn.btn-default Add
+
+.col-lg-2
+  .panel.panel-default
+    .panel-body
+      p: strong Viewers
+      p In progress...
+
+  .panel.panel-default
+    .panel-body
+      p: strong Location
+      p In progress...
+
+javascript:
+  var state = 1;
+  $("#rotate").click(function () {
+    switch (state) {
+      case ROTATION.VERTICAL_RIGHT:
+        rotate(90, 1.777);
+        state += 1;
+        break;
+      case ROTATION.VERTICAL_LEFT:
+        rotate(180, 1);
+        state += 1;
+        break;
+      case ROTATION.HORIZONTAL_RIGHT:
+        rotate(-90, 1.777);
+        state += 1;
+        break;
+      case ROTATION.HORIZONTAL_LEFT:
+        rotate(0, 1);
+        state = 1;
+        break;
+    }
+  });
+
+  var player = videojs('video', {"autoplay": true});
+  rotate(0, 1);
+
+  function rotate(gradus, zoom) {
+    var video = $('#video');
+    video.width('auto');
+    video.height(video.width() * 9 / 16);
+
+    player.zoomrotate({
+      rotate: gradus,
+      zoom: zoom
+    });
+  }
+
+  var chatPoint = '#{@chat_point}'.replace('https:', 'wss:').replace('http:', 'ws:') + '/chatapi/v1/chatnow';
+
+  var openSocket = function () {
+    ws = new WebSocket(chatPoint);
+
+    ws.onopen = function () {
+      ws.send(JSON.stringify({
+        payload: JSON.stringify({access_token: '#{@access_token}'}),
+        kind: MESSAGE_KIND.AUTH
+      }));
+      ws.send(JSON.stringify({
+        payload: JSON.stringify({
+          body: JSON.stringify({
+            room: '#{@room_id}'
+          }),
+          kind: MESSAGE_KIND.CHAT
+        }),
+        kind: MESSAGE_KIND.CONTROL
+      }));
+    };
+
+    ws.onmessage = function (data) {
+      processMessage(JSON.parse(data.data));
+    };
+
+    ws.onclose = function (event) {
+      ws.close();
+      switch (event.code) {
+        case 403:
+          console.log('Forbidden');
+          break;
+        case 1006:
+          console.log('Reconnect');
+          openSocket();
+          break;
+        case 1000:
+          break;
+        default:
+          console.log('Websocket closed, code: ', event.code);
+      }
+    };
+  };
+
+  function renderMessages(event) {
+    switch (event.type) {
+      case 1:
+        var date = new Date((parseInt(event.ntpForLiveFrame.toString(16).substr(0, 8), 16) - 2208988800) * 1000);
+
+        var li = document.createElement("li");
+        var div = document.createElement("div");
+        div.setAttribute("class", "commenterImage");
+        var img = document.createElement("img");
+        img.setAttribute("src", event.profileImageURL);
+        div.appendChild(img);
+        var div2 = document.createElement("div");
+        div2.setAttribute("class", "commentText");
+        var p = document.createElement("p");
+        var body = document.createTextNode(event.displayName + ': ' + event.body);
+        p.appendChild(body);
+        div2.appendChild(p);
+        var span = document.createElement("span");
+        span.setAttribute("class", "data");
+        span.setAttribute("class", "sub-text");
+        var dateText = document.createTextNode(date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds());
+        span.appendChild(dateText);
+
+        li.appendChild(div);
+        li.appendChild(div2);
+        li.appendChild(span);
+        var comments = $('#comments');
+        comments.append(li);
+        comments.scrollTop = comments.scrollHeight;
+            //case 2: // heart
+            //  /*moderationReportType: 0
+            //   moderationType: 0*/
+            //  break;
+            //case 3: // "joined"
+            //  if (event.displayName && !$.isArray(container))
+            //    userlistAdd(event);
+            //  break;
+            //case 4: // broadcaster moved to new place
+            //  if ($('#debug')[0].checked && !$.isArray(container))
+            //    console.log('new location: ' + event.lat + ', ' + event.lng + ', ' + event.heading);
+            //  break;
+            //case 5: // broadcast ended
+            //  if (!$.isArray(container))
+            //    container.append('<div class="service">*** ' + (event.displayName || 'Broadcaster') + (event.username ? ' (@' + event.username + ')' : '') + ' ended the broadcast</div>');
+            //  break;
+            //case 6: // followers invited
+            //  if (!$.isArray(container))
+            //    container.append('<div class="service">*** ' + (event.displayName || '') + ' (@' + event.username + '): ' + event.body.replace('*%s*', event.invited_count) + '</div>');
+            //  break;
+            //case 7: // BROADCAST_STARTED_LOCALLY (?)
+            //  if (!$.isArray(container)) {
+            //    container.append('<div class="service">*** Broadcast started locally</div>');
+            //    console.log('BROADCAST_STARTED_LOCALLY', event);
+            //  }
+            //  break;
+            //case 8: // replay available
+            //  break;
+            //case 9: // Broadcaster starts streaming. uuid=SE-0. timestampPlaybackOffset
+            //  break;
+            //case 10: //LOCAL_PROMPT_TO_FOLLOW_BROADCASTER (?)
+            //  if (!$.isArray(container)) {
+            //    container.append('<div class="service">*** LOCAL_PROMPT_TO_FOLLOW_BROADCASTER</div>');
+            //    console.log('LOCAL_PROMPT_TO_FOLLOW_BROADCASTER', event);
+            //  }
+            //  break;
+            //case 11: //LOCAL_PROMPT_TO_SHARE_BROADCAST (?)
+            //  if (!$.isArray(container)) {
+            //    container.append('<div class="service">*** LOCAL_PROMPT_TO_SHARE_BROADCAST</div>');
+            //    console.log('LOCAL_PROMPT_TO_SHARE_BROADCAST', event);
+            //  }
+            //  break;
+            //case 12: // Ban
+            //case 14: //SUBSCRIBER_BLOCKED_VIEWER
+            //  if ($.isArray(container))
+            //    container.push({
+            //      date: date,
+            //      user: '',
+            //      text: '@' + event.broadcasterBlockedUsername + ' has been blocked for message: "' + event.broadcasterBlockedMessageBody + '"'
+            //    });
+            //  else
+            //    container.append('<div class="service">*** @' + event.broadcasterBlockedUsername + ' has been blocked for message: "' + event.broadcasterBlockedMessageBody + '"</div>');
+            //  break;
+            //case 13: //SUBSCRIBER_SHARED_ON_TWITTER
+            //  if (!$.isArray(container))
+            //    container.append('<div class="service">*** ' + (event.displayName || '') + ' (@' + event.username + ') shared on twitter</div>');
+            //  break;
+            //case 15: //SUBSCRIBER_SHARED_ON_FACEBOOK
+            //  if (!$.isArray(container))
+            //    container.append('<div class="service">*** ' + (event.displayName || '') + ' (@' + event.username + ') shared on facebook</div>');
+            //  break;
+            //case 16: //SCREENSHOT
+            //  if (!$.isArray(container))
+            //    container.append('<div class="service">*** ' + (event.displayName || '') + ' (@' + event.username + ') has made the screenshot</div>');
+            //  break;
+    }
+  }
+
+  function processMessage(message) {
+    message.payload = JSON.parse(message.payload);
+    message.body = JSON.parse(message.payload.body);
+
+    switch (message.kind) {
+      case MESSAGE_KIND.CHAT:
+        renderMessages(message.body);
+        break;
+      case MESSAGE_KIND.CONTROL:
+        if (message.payload.kind == MESSAGE_KIND.PRESENCE)
+          showUsersCount(message.body.occupancy + '/' + message.body.total_participants);
+        else
+          console.log(message);
+        break;
+      default:
+        console.log('default!', message);
+    }
+  }
+
+  function showUsersCount(message) {
+    $('#user-count').text(' ' + message)
+  }
+
+  var MESSAGE_KIND = {
+    CHAT: 1,
+    CONTROL: 2,
+    AUTH: 3,
+    PRESENCE: 4
+  };
+
+  var ROTATION = {
+    VERTICAL_RIGHT: 1,
+    VERTICAL_LEFT: 2,
+    HORIZONTAL_RIGHT: 3,
+    HORIZONTAL_LEFT: 4
+  };
+
+  openSocket();

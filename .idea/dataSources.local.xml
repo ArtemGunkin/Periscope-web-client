@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="Rails Periscope: production" uuid="94218630-b4bd-4da0-9387-2674a2bd1589">
+      <first-sync>true</first-sync>
+      <user-name>postgres</user-name>
+      <user-password>df96df8fdf97df8adfefdfe4dffcdff1df8ddffadfefdff8dfe3dff9dfe9dfe5dffadfefdff5dfeedfebdffedfebdfe8dfebdff9dfefdff5dffadfebdff9dff9dffddfe5dff8dfeedf8ddff7df8adf8fdf94</user-password>
+    </data-source>
+    <data-source name="Rails Periscope: test" uuid="f29ed002-627c-44ed-88df-c5c34a3dd28a">
+      <first-sync>true</first-sync>
+    </data-source>
+    <data-source name="Rails Periscope: development" uuid="7abceb7a-1cae-45db-9b8d-6cfe12d46475">
+      <user-name>postgres</user-name>
+      <user-password>df9bdf98df99df9edf9fdf9c</user-password>
+      <schema-pattern>periscope.pg_catalog periscope.public</schema-pattern>
+      <default-schemas>periscope.public</default-schemas>
+    </data-source>
+  </component>
+</project>

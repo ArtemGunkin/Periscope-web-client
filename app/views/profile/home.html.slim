@@ -1,0 +1,14 @@
+.col-lg-2.col-lg-offset-1
+  = render partial: 'user', locals: {user: client}
+
+.col-lg-6
+  - if @broadcasts.empty?
+    .panel.panel-default
+      .panel-body.text-center
+        h4 Nothing yet
+  - else
+    = render partial: 'broadcast', collection: @broadcasts
+
+.col-lg-2
+  .panel.panel-default
+    .panel-body dsfadf

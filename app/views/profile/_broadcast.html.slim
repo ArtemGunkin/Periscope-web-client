@@ -1,0 +1,9 @@
+.col-lg-6.broad-padding
+  /p = broadcast
+  a href = "/broadcast/#{broadcast.id}"
+    img.cover.img-rounded.broadcast src== broadcast.image_url
+    .broadcast
+      img.img-circle.img-border.user-image src== broadcast.profile_image_url
+      .username.text-white
+        h5: strong = broadcast.status
+        p  = broadcast.user_display_name

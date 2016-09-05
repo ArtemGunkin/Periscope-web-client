@@ -1,0 +1,74 @@
+.panel-body .profile-image {
+    width: 90px;
+    bottom: -40px;
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    z-index: 1;
+}
+
+.broad-padding {
+    margin-bottom: 20px;
+}
+
+.panel-body ul li h5 {
+    margin-top: 0;
+}
+
+.img-border {
+    border: 3px solid white;
+}
+
+.user-image {
+    width: 60px;
+    height: 60px;
+    background-image: url(default-image.png) ;
+    background-size: cover;
+    display: inline-block;
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+}
+
+.username {
+    text-shadow: 0 1px 1px grey;
+    position: absolute;
+    bottom: 3px;
+    left: 85px;
+}
+
+.text-white {
+    color: white;
+}
+
+.navbar .profile-image{
+    margin: -10px 0;
+    height: 40px;
+    position: relative;
+}
+
+.panel-default {
+    word-wrap:break-word;
+    overflow: hidden;
+}
+
+.back-image {
+    height: 130px;
+    margin: -15px -15px 45px -15px;
+    background: no-repeat center;
+    position: relative;
+}
+
+.broadcast {
+    position: relative;
+}
+
+.cover {
+    object-fit: cover;
+    width: 100%;
+    min-height: 200px;
+    max-height: 200px;
+    text-shadow: 2px 2px 2px grey;
+}

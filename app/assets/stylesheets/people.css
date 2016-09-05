@@ -1,0 +1,16 @@
+.media-object {
+    height: 90px;
+    margin: 15px;
+}
+
+.media-body h4 {
+    margin-bottom: 0;
+}
+
+.media-body p {
+    margin-top: 10px;
+}
+
+.media {
+    margin-right: 30px;
+}
